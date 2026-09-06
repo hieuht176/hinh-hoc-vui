@@ -29,8 +29,20 @@ const cards = [
   {
     to: '/phep-bien-hinh',
     title: 'Phép biến hình',
-    desc: 'Tịnh tiến, quay, đối xứng tâm, đối xứng trục — thực hành trực tiếp trên hệ tọa độ Oxy với công thức đi kèm.',
+    desc: 'Tịnh tiến, quay, đối xứng tâm, đối xứng trục, đối xứng quay — thực hành trực tiếp trên hệ tọa độ Oxy với công thức đi kèm.',
     emoji: '📐',
+  },
+  {
+    to: '/goc-va-compa',
+    title: 'Góc & Compa',
+    desc: 'Các loại góc, tập vẽ góc bằng thước đo độ, vẽ hình tròn bằng compa, và khám phá vì sao tổng ba góc trong tam giác luôn bằng 180°.',
+    emoji: '🧭',
+  },
+  {
+    to: '/tam-giac-va-hcn',
+    title: 'Tam giác & Hình chữ nhật',
+    desc: 'Tách đôi hình chữ nhật theo đường chéo và kéo trượt đỉnh tam giác để hiểu vì sao diện tích tam giác luôn bằng nửa đáy × chiều cao.',
+    emoji: '✂️',
   },
 ]
 
@@ -39,7 +51,7 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-4 py-10">
       <Hero />
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2">
+      <div id="features" className="mt-12 grid scroll-mt-24 gap-5 sm:grid-cols-2">
         {cards.map((c) => (
           <Link
             key={c.to}

@@ -170,12 +170,12 @@ export default function Combine3DPage() {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_260px]">
-        <div className="h-[560px] overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-b from-slate-50 to-indigo-50 shadow-sm">
+        <div className="h-[560px] overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
           <Canvas shadows camera={{ position: [7, 6, 9], fov: 40 }} onPointerMissed={() => setSelectedId(null)}>
-            <ambientLight intensity={0.65} />
-            <directionalLight position={[6, 10, 6]} intensity={1.2} castShadow shadow-mapSize={[1024, 1024]} />
-            <Grid args={[30, 30]} sectionColor="#c7d2fe" cellColor="#e0e7ff" fadeDistance={20} position={[0, 0, 0]} />
-            <ContactShadows position={[0, 0.01, 0]} opacity={0.4} scale={20} blur={2.2} far={10} />
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[6, 10, 6]} intensity={1.3} castShadow shadow-mapSize={[1024, 1024]} />
+            <Grid args={[30, 30]} sectionColor="#475569" cellColor="#1e293b" fadeDistance={20} position={[0, 0, 0]} />
+            <ContactShadows position={[0, 0.01, 0]} opacity={0.6} scale={20} blur={2.2} far={10} color="#000814" />
             <Environment preset="city" />
 
             {placed.map((item) => (

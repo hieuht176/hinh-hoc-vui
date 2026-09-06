@@ -7,6 +7,8 @@ const links = [
   { to: '/ghep-hinh-2d', label: 'Ghép hình 2D' },
   { to: '/ghep-hinh-3d', label: 'Ghép hình 3D' },
   { to: '/phep-bien-hinh', label: 'Phép biến hình' },
+  { to: '/goc-va-compa', label: 'Góc & Compa' },
+  { to: '/tam-giac-va-hcn', label: 'Tam giác & HCN' },
 ]
 
 export default function NavBar() {

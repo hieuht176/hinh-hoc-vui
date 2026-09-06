@@ -8,6 +8,19 @@ export function regularPolygonPoints(sides: number, radius: number, rotationDeg 
   return pts
 }
 
+/** Alternating outer/inner radius star outline (e.g. a 5-pointed star = spikes=5). */
+export function starPoints(spikes: number, outerRadius: number, innerRadius: number, rotationDeg = 90): [number, number][] {
+  const pts: [number, number][] = []
+  const start = (rotationDeg * Math.PI) / 180
+  const step = Math.PI / spikes
+  for (let i = 0; i < spikes * 2; i++) {
+    const r = i % 2 === 0 ? outerRadius : innerRadius
+    const a = start + i * step
+    pts.push([r * Math.cos(a), r * Math.sin(a)])
+  }
+  return pts
+}
+
 /** side length -> circumradius for a regular polygon */
 export function sideToCircumradius(sides: number, side: number): number {
   return side / (2 * Math.sin(Math.PI / sides))

@@ -15,9 +15,9 @@ import InfoCard from '../components/common/InfoCard'
 
 const TYPES: { id: TransformType; label: string; emoji: string; blurb: string }[] = [
   { id: 'translate', label: 'Phép tịnh tiến', emoji: '➡️', blurb: 'Đẩy cả hình sang một hướng, không xoay, không đổi dạng.' },
-  { id: 'rotate', label: 'Quay hình', emoji: '🔄', blurb: 'Xoay hình quanh một điểm, giống kim đồng hồ.' },
+  { id: 'rotate', label: 'Phép quay', emoji: '🔄', blurb: 'Xoay hình quanh một điểm, giống kim đồng hồ.' },
   { id: 'point-symmetry', label: 'Lật qua điểm', emoji: '📍', blurb: 'Hình "nhảy" sang phía đối diện của một điểm.' },
-  { id: 'axis-symmetry', label: 'Lật qua gương', emoji: '🪞', blurb: 'Soi gương! Ảnh hiện ra ở phía bên kia đường thẳng.' },
+  { id: 'axis-symmetry', label: 'Phép đối xứng', emoji: '🪞', blurb: 'Soi gương! Ảnh hiện ra ở phía bên kia đường thẳng.' },
   {
     id: 'rotational-symmetry',
     label: 'Phép đối xứng quay',

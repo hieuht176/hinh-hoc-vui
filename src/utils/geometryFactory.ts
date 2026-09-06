@@ -24,6 +24,12 @@ export function createSquarePyramidGeometry(base: number, height: number): THREE
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
   geometry.computeVertexNormals()
+  // One group per face (base + each of the 4 triangular sides) so each can get its own material.
+  geometry.addGroup(0, 6, 0)
+  geometry.addGroup(6, 3, 1)
+  geometry.addGroup(9, 3, 2)
+  geometry.addGroup(12, 3, 3)
+  geometry.addGroup(15, 3, 4)
   return geometry
 }
 
@@ -48,5 +54,13 @@ export function createTriangularPrismGeometry(a: number, length: number): THREE.
   geometry.rotateX(Math.PI / 2)
   geometry.translate(0, -length / 2, 0)
   geometry.computeVertexNormals()
+  // ExtrudeGeometry groups both triangular caps together and all 3 side walls together;
+  // split them so the 2 caps and 3 rectangular sides can each get their own material.
+  geometry.clearGroups()
+  geometry.addGroup(0, 3, 0)
+  geometry.addGroup(3, 3, 1)
+  geometry.addGroup(6, 6, 2)
+  geometry.addGroup(12, 6, 3)
+  geometry.addGroup(18, 6, 4)
   return geometry
 }

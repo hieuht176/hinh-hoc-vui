@@ -53,14 +53,14 @@ export default function FoldingNet3D({ shapeId, params, color }: { shapeId: stri
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="h-[360px] w-full overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-b from-slate-50 to-indigo-50 shadow-sm">
+      <div className="h-[360px] w-full overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
         <Canvas shadows camera={{ position: [6, 6, 7], fov: 40 }}>
-          <ambientLight intensity={0.65} />
-          <directionalLight position={[6, 9, 5]} intensity={1.1} castShadow />
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[6, 9, 5]} intensity={1.2} castShadow />
           <group position={[-w / 2, 0, -d / 2]}>
             <FoldFaceNode face={tree} t={t} />
           </group>
-          <ContactShadows position={[0, -0.02, 0]} opacity={0.3} scale={12} blur={2} far={4} />
+          <ContactShadows position={[0, -0.02, 0]} opacity={0.5} scale={12} blur={2} far={4} color="#000814" />
           <Environment preset="city" />
           <OrbitControls enablePan={false} minDistance={3} maxDistance={16} />
         </Canvas>

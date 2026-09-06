@@ -17,12 +17,12 @@ export default function Shape3DExplorer({ def }: { def: Shape3DDef }) {
   return (
     <div className="grid gap-8 md:grid-cols-2">
       <div className="flex flex-col items-center gap-4">
-        <div className="h-[340px] w-full overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-b from-slate-50 to-indigo-50 shadow-sm">
+        <div className="h-[340px] w-full overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
           <Canvas shadows camera={{ position: [5, 4, 6], fov: 40 }}>
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[5, 8, 5]} intensity={1.1} castShadow />
-            <ShapeMesh3D id={def.id} params={params} color={def.color} />
-            <ContactShadows position={[0, -2.2, 0]} opacity={0.35} scale={10} blur={2} far={4} />
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[5, 8, 5]} intensity={1.2} castShadow />
+            <ShapeMesh3D id={def.id} params={params} color={def.color} transparent multiColor />
+            <ContactShadows position={[0, -2.2, 0]} opacity={0.5} scale={10} blur={2} far={4} color="#000814" />
             <Environment preset="city" />
             <OrbitControls autoRotate={autoRotate} autoRotateSpeed={2.5} enablePan={false} minDistance={3} maxDistance={14} />
           </Canvas>
