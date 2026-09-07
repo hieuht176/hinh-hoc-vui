@@ -42,7 +42,7 @@ export const ANGLE_TYPES: AngleTypeDef[] = [
   },
   {
     id: 'reflex',
-    name: 'Góc phản',
+    name: 'Góc lõm',
     range: '180° < góc < 360°',
     example: 260,
     description: 'Góc có số đo lớn hơn 180° và nhỏ hơn 360° — "phần góc lớn hơn" ở phía bên kia của hai cạnh.',
