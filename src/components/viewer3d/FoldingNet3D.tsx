@@ -52,8 +52,8 @@ export default function FoldingNet3D({ shapeId, params, color }: { shapeId: stri
   if (!tree) return null
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="h-[360px] w-full overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
+    <div className="flex w-full flex-col items-center gap-3">
+      <div className="h-[380px] w-full overflow-hidden rounded-3xl border sm:h-[460px] lg:h-[min(72vh,560px)] border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
         <Canvas shadows camera={{ position: [6, 6, 7], fov: 40 }}>
           <ambientLight intensity={0.7} />
           <directionalLight position={[6, 9, 5]} intensity={1.2} castShadow />
@@ -72,7 +72,7 @@ export default function FoldingNet3D({ shapeId, params, color }: { shapeId: stri
         </div>
         <input type="range" min={0} max={1} step={0.01} value={t} onChange={(e) => setT(Number(e.target.value))} className="w-full accent-indigo-600" />
       </label>
-      <p className="text-xs text-slate-400">Kéo thanh trượt để mở bung hoặc gấp lại các mặt — kéo chuột trên canvas để xoay góc nhìn</p>
+      <p className="text-center text-sm text-slate-500">Kéo thanh trượt để mở bung hoặc gấp lại các mặt · kéo vào khung để xoay góc nhìn</p>
     </div>
   )
 }

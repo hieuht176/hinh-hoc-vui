@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
 import { angleOfPoint, polarToCartesian } from '../../utils/angleMath'
+import { clientToSvg } from '../../utils/svgPoint'
+import { Fold } from '../common/StudyLayout'
 
 const CX = 200
 const CY = 230
@@ -23,9 +25,7 @@ export default function ProtractorTool() {
   const isCorrect = !freeMode && diff <= TOLERANCE
 
   const clientToLocal = (clientX: number, clientY: number): [number, number] => {
-    const rect = svgRef.current!.getBoundingClientRect()
-    const scale = 400 / rect.width
-    return [(clientX - rect.left) * scale, (clientY - rect.top) * scale]
+    return clientToSvg(svgRef.current!, clientX, clientY)
   }
 
   const updateFromPoint = (clientX: number, clientY: number) => {
@@ -75,15 +75,13 @@ export default function ProtractorTool() {
   const [targetX, targetY] = polarToCartesian(CX, CY, OUTER_R + 4, target)
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-      <div className="flex flex-col items-center gap-3">
-        <div className="rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm">
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="flex flex-col items-center gap-3 lg:sticky lg:top-20">
+        <div className="w-full rounded-3xl border border-indigo-100 bg-white p-2 shadow-sm sm:p-3">
           <svg
             ref={svgRef}
-            width={340}
-            height={250}
             viewBox="0 0 400 245"
-            className="touch-none rounded-xl bg-white"
+            className="block h-auto w-full max-h-[72vh] touch-none select-none rounded-xl bg-white"
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
           >
@@ -118,10 +116,10 @@ export default function ProtractorTool() {
             />
           </svg>
         </div>
-        <p className="text-center text-xs text-slate-400">Kéo chấm xanh theo đúng vạch trên thước đo độ</p>
+        <p className="text-center text-sm text-slate-500">Kéo chấm xanh theo đúng vạch trên thước đo độ</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between gap-2 rounded-2xl border border-indigo-100 bg-white p-4 shadow-sm">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Chế độ</div>
@@ -163,14 +161,13 @@ export default function ProtractorTool() {
           </div>
         )}
 
-        <div className="rounded-2xl border border-indigo-100 bg-white p-4 text-sm leading-relaxed text-slate-600 shadow-sm">
-          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-indigo-500">Cách vẽ góc bằng thước đo độ</div>
+        <Fold title="📏 Cách vẽ góc bằng thước đo độ">
           <ol className="list-decimal space-y-1 pl-4">
             <li>Đặt tâm thước trùng với đỉnh góc, cạnh 0° trùng với một cạnh có sẵn của góc.</li>
             <li>Tìm vạch chia ứng với số đo góc cần vẽ trên vành thước.</li>
             <li>Đánh dấu điểm tại vạch đó, rồi nối đỉnh góc với điểm vừa đánh dấu — đó chính là cạnh còn lại của góc.</li>
           </ol>
-        </div>
+        </Fold>
       </div>
     </div>
   )

@@ -21,7 +21,7 @@ export default function Detail3DPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-8">
       <Link to="/hinh-3d" className="text-sm text-indigo-500 hover:underline">
         ← Thư viện hình 3D
       </Link>

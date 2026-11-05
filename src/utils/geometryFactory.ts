@@ -52,7 +52,8 @@ export function createTriangularPrismGeometry(a: number, length: number): THREE.
     curveSegments: 1,
   })
   geometry.rotateX(Math.PI / 2)
-  geometry.translate(0, -length / 2, 0)
+  // rotateX(+90°) sends the extrusion to y ∈ [−length, 0]; shift it up so the prism is centred on the origin.
+  geometry.translate(0, length / 2, 0)
   geometry.computeVertexNormals()
   // ExtrudeGeometry groups both triangular caps together and all 3 side walls together;
   // split them so the 2 caps and 3 rectangular sides can each get their own material.

@@ -72,19 +72,19 @@ export function getNet2D(shapeId: string, p: Record<string, number>): NetPart[] 
     case 'octahedron': {
       const a = p.a
       const triH = (SQRT3 / 2) * a
-      const gap = a * 0.25
+      // Valid connected net: a zig-zag strip of 6 triangles (the "belt" around the octahedron),
+      // plus the top face hinged on triangle 2's upper edge and the bottom face on triangle 5's lower edge.
       const parts: NetPart[] = []
-      for (let row = 0; row < 2; row++) {
-        for (let col = 0; col < 4; col++) {
-          const x0 = col * (a + gap)
-          const y0 = row * (triH + gap)
-          const up = (col + row) % 2 === 0
-          parts.push({
-            kind: 'polygon',
-            points: up ? [[x0, y0 + triH], [x0 + a, y0 + triH], [x0 + a / 2, y0]] : [[x0, y0], [x0 + a, y0], [x0 + a / 2, y0 + triH]],
-          })
-        }
+      for (let k = 0; k < 6; k++) {
+        const x0 = (k * a) / 2
+        const up = k % 2 === 0
+        parts.push({
+          kind: 'polygon',
+          points: up ? [[x0, triH], [x0 + a, triH], [x0 + a / 2, 0]] : [[x0, 0], [x0 + a, 0], [x0 + a / 2, triH]],
+        })
       }
+      parts.push({ kind: 'polygon', points: [[a / 2, 0], [(3 * a) / 2, 0], [a, -triH]] })
+      parts.push({ kind: 'polygon', points: [[2 * a, triH], [3 * a, triH], [2.5 * a, 2 * triH]] })
       return parts
     }
     case 'cylinder': {

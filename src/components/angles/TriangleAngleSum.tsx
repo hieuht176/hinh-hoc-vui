@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { angleOfPoint, arcPath, interiorAngleDeg, polarToCartesian } from '../../utils/angleMath'
+import { clientToSvg } from '../../utils/svgPoint'
 
 type Pt = [number, number]
 
@@ -16,9 +17,7 @@ export default function TriangleAngleSum() {
   const dragIndex = useRef<number | null>(null)
 
   const clientToLocal = (clientX: number, clientY: number): Pt => {
-    const rect = svgRef.current!.getBoundingClientRect()
-    const scale = 400 / rect.width
-    return [(clientX - rect.left) * scale, (clientY - rect.top) * scale]
+    return clientToSvg(svgRef.current!, clientX, clientY)
   }
 
   const onHandlePointerDown = (i: number) => (e: React.PointerEvent) => {
@@ -53,15 +52,13 @@ export default function TriangleAngleSum() {
   })
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-      <div className="flex flex-col items-center gap-3">
-        <div className="rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm">
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="flex flex-col items-center gap-3 lg:sticky lg:top-20">
+        <div className="w-full rounded-3xl border border-indigo-100 bg-white p-2 shadow-sm sm:p-3">
           <svg
             ref={svgRef}
-            width={340}
-            height={310}
             viewBox="0 0 400 310"
-            className="touch-none rounded-xl bg-white"
+            className="block h-auto w-full max-h-[72vh] touch-none select-none rounded-xl bg-white"
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
           >
@@ -109,10 +106,10 @@ export default function TriangleAngleSum() {
             ))}
           </svg>
         </div>
-        <p className="text-center text-xs text-slate-400">Kéo các đỉnh A, B, C để thay đổi hình dạng tam giác</p>
+        <p className="text-center text-sm text-slate-500">Kéo các đỉnh A, B, C để thay đổi hình dạng tam giác</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="grid grid-cols-3 gap-2">
           {LABELS.map((l, i) => (
             <div key={l} className="rounded-xl border border-indigo-100 bg-white p-3 text-center shadow-sm">
@@ -129,13 +126,8 @@ export default function TriangleAngleSum() {
           <div className="text-2xl font-bold text-emerald-600">
             {angles[0].toFixed(1)}° + {angles[1].toFixed(1)}° + {angles[2].toFixed(1)}° = {sum.toFixed(1)}°
           </div>
-        </div>
-
-        <div className="rounded-2xl border border-indigo-100 bg-white p-4 text-sm leading-relaxed text-slate-600 shadow-sm">
-          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-indigo-500">Định lý</div>
-          <p>
-            Kéo thử đỉnh A, B, C sang bất kỳ vị trí nào — tam giác thay đổi hình dạng, nhưng tổng ba góc trong luôn luôn bằng{' '}
-            <span className="font-semibold text-slate-800">180°</span>, đúng bằng một góc bẹt!
+          <p className="mt-2 text-sm text-slate-600">
+            Kéo đỉnh đi đâu thì tổng ba góc vẫn luôn bằng <b>180°</b>, đúng bằng một góc bẹt!
           </p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { OrbitControls, TransformControls, Grid, Environment, ContactShadows } f
 import { shapes3D, shapes3DMap } from '../data/shapes3d'
 import ShapeMesh3D from '../components/viewer3d/ShapeMesh3D'
 import Icon3D from '../components/common/Icon3D'
+import { Fold, Panel } from '../components/common/StudyLayout'
 import { getHalfExtents, findFreeSpot, restingBottomY, type Footprint } from '../utils/placement3d'
 import type { PlacedShape3D } from '../types'
 
@@ -149,28 +150,10 @@ export default function Combine3DPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-3xl font-bold text-slate-800">Ghép hình 3D</h1>
-      <p className="mt-2 text-slate-500">
-        Bấm một khối để thêm vào không gian — khối mới sẽ tự rơi xuống và xếp gọn bên cạnh các khối khác. Kéo một khối chồng lên khối
-        khác để xếp chồng, không lo bị xuyên qua nhau. Kéo chuột nền để xoay góc nhìn 360°.
-      </p>
+      <p className="mt-2 text-slate-500">Bấm vào một khối để thả vào không gian, rồi xếp chồng thành mô hình em thích!</p>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {shapes3D.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => addShape(s.id)}
-            className="flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md active:translate-y-0"
-          >
-            <span className="h-4 w-4">
-              <Icon3D id={s.id} color={s.color} size={16} />
-            </span>
-            {s.name}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_260px]">
-        <div className="h-[560px] overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
+      <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="h-[420px] w-full overflow-hidden rounded-3xl border sm:h-[520px] lg:sticky lg:top-20 lg:h-[min(75vh,640px)] border-slate-700 bg-gradient-to-b from-[#0b1324] to-[#16223d] shadow-sm">
           <Canvas shadows camera={{ position: [7, 6, 9], fov: 40 }} onPointerMissed={() => setSelectedId(null)}>
             <ambientLight intensity={0.7} />
             <directionalLight position={[6, 10, 6]} intensity={1.3} castShadow shadow-mapSize={[1024, 1024]} />
@@ -212,7 +195,22 @@ export default function Combine3DPage() {
           </Canvas>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
+          <Panel title="Thêm khối">
+            <div className="grid grid-cols-4 gap-2">
+              {shapes3D.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => addShape(s.id)}
+                  title={s.name}
+                  className="flex flex-col items-center gap-0.5 rounded-xl border border-indigo-50 bg-indigo-50/40 p-1 text-[11px] leading-tight text-slate-600 transition hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-white active:scale-95"
+                >
+                  <Icon3D id={s.id} color={s.color} size={44} />
+                  <span className="line-clamp-2 text-center">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          </Panel>
           <div className="rounded-2xl border border-indigo-100 bg-white p-3 shadow-sm">
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Công cụ</div>
             <div className="flex gap-2">
@@ -226,7 +224,7 @@ export default function Combine3DPage() {
                 <button
                   key={m}
                   onClick={() => setMode(m)}
-                  className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition ${
+                  className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
                     mode === m ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
                   }`}
                 >
@@ -271,7 +269,7 @@ export default function Combine3DPage() {
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-indigo-200 bg-white/60 p-4 text-sm text-slate-400">
-              Bấm chọn một khối trong không gian để chỉnh sửa, hoặc bấm khối ở trên để thêm mới.
+              Bấm vào một khối trong không gian để đổi màu, nhân đôi hoặc xóa.
             </div>
           )}
           {placed.length > 0 && (
@@ -285,6 +283,14 @@ export default function Combine3DPage() {
               Xóa toàn bộ không gian
             </button>
           )}
+          <Fold title="❓ Cách chơi">
+            <ul className="list-disc space-y-1 pl-4">
+              <li>Bấm một khối ở bảng <b>Thêm khối</b>: khối tự rơi xuống và xếp gọn cạnh các khối khác.</li>
+              <li>Chọn khối rồi dùng <b>Công cụ</b> (Di chuyển / Xoay / Phóng to) và kéo các mũi tên trên khối.</li>
+              <li>Kéo khối chồng lên khối khác để xếp chồng, không lo bị xuyên qua nhau.</li>
+              <li>Kéo nền để xoay góc nhìn 360°, lăn chuột để phóng to / thu nhỏ.</li>
+            </ul>
+          </Fold>
         </div>
       </div>
     </div>

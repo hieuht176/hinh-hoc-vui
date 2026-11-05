@@ -10,10 +10,10 @@ export default function ParamSlider({
   onChange: (v: number) => void
 }) {
   return (
-    <label className="block text-sm">
+    <label className="block text-base">
       <div className="mb-1 flex items-center justify-between text-slate-600">
         <span>{def.label}</span>
-        <span className="font-mono font-semibold text-indigo-600">
+        <span className="font-mono text-lg font-semibold text-indigo-600">
           {value} {def.unit}
         </span>
       </div>

@@ -1,10 +1,14 @@
 import { useRef, useState } from 'react'
 import { shapes2D, shapes2DMap } from '../data/shapes2d'
-import { ShapeGeometryG } from '../components/viewer2d/ShapeSvg2D'
+import ShapeSvg2D, { ShapeGeometryG } from '../components/viewer2d/ShapeSvg2D'
+import { clientToSvg } from '../utils/svgPoint'
+import MeasureOverlay from '../components/viewer2d/MeasureOverlay'
+import TilingMode from '../components/combine/TilingMode'
+import { Fold, Panel } from '../components/common/StudyLayout'
 import type { PlacedShape2D } from '../types'
 
-const CANVAS_W = 900
-const CANVAS_H = 540
+const CANVAS_W = 640
+const CANVAS_H = 400
 const PALETTE = ['#6366f1', '#0ea5e9', '#f97316', '#ef4444', '#22c55e', '#d946ef', '#14b8a6', '#f59e0b']
 
 let nextId = 1
@@ -12,13 +16,15 @@ let nextId = 1
 export default function Combine2DPage() {
   const [placed, setPlaced] = useState<PlacedShape2D[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [showMeasures, setShowMeasures] = useState(false)
+  const [mode, setMode] = useState<'free' | 'tiling'>('free')
   const svgRef = useRef<SVGSVGElement>(null)
 
   const selected = placed.find((p) => p.id === selectedId) ?? null
 
   const localPoint = (clientX: number, clientY: number) => {
-    const rect = svgRef.current!.getBoundingClientRect()
-    return { x: clientX - rect.left, y: clientY - rect.top }
+    const [x, y] = clientToSvg(svgRef.current!, clientX, clientY)
+    return { x, y }
   }
 
   const addShape = (shapeId: string) => {
@@ -109,31 +115,42 @@ export default function Combine2DPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-3xl font-bold text-slate-800">Ghép hình 2D</h1>
       <p className="mt-2 text-slate-500">
-        Nhấn vào một hình bên dưới để thêm vào bàn ghép. Kéo để di chuyển, kéo chấm tròn phía trên để xoay, dùng bảng bên phải để đổi màu / kích
-        thước.
+        {mode === 'free'
+          ? 'Bấm vào một hình để thả lên bàn ghép, rồi kéo để xếp thành hình em thích!'
+          : 'Chọn một loại gạch rồi lát kín nền. Hình nào lát kín được, hình nào còn chỗ hở? Vì sao?'}
       </p>
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        {shapes2D.map((s) => (
+      <div className="mt-4 flex gap-1 self-start rounded-xl bg-slate-100 p-1 sm:inline-flex">
+        {(
+          [
+            ['free', '🧩 Ghép tự do'],
+            ['tiling', '🧱 Lát nền'],
+          ] as const
+        ).map(([id, label]) => (
           <button
-            key={s.id}
-            onClick={() => addShape(s.id)}
-            className="flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm hover:border-indigo-300 hover:text-indigo-600"
+            key={id}
+            onClick={() => setMode(id)}
+            className={`flex-1 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              mode === id ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+            }`}
           >
-            <span className="inline-block h-3 w-3 rounded-full" style={{ background: s.color }} />
-            {s.name}
+            {label}
           </button>
         ))}
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_260px]">
-        <div className="overflow-auto rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm">
+      {mode === 'tiling' && (
+        <div className="mt-5">
+          <TilingMode />
+        </div>
+      )}
+
+      {mode === 'free' && (
+      <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="w-full rounded-3xl border border-indigo-100 bg-white p-2 shadow-sm lg:sticky lg:top-20">
           <svg
             ref={svgRef}
-            width={CANVAS_W}
-            height={CANVAS_H}
             viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
-            className="touch-none rounded-xl bg-[radial-gradient(circle,_#eef2ff_1px,_transparent_1px)] [background-size:20px_20px]"
+            className="block h-auto w-full max-h-[75vh] touch-none select-none rounded-xl bg-[radial-gradient(circle,_#eef2ff_1px,_transparent_1px)] [background-size:20px_20px]"
             onPointerMove={onSvgPointerMove}
             onPointerUp={onSvgPointerUp}
             onPointerDown={() => setSelectedId(null)}
@@ -182,10 +199,40 @@ export default function Combine2DPage() {
                 </g>
               )
             })}
+            {showMeasures &&
+              placed.map((item) => (
+                <g key={`m-${item.id}`} transform={`translate(${item.x} ${item.y})`}>
+                  <MeasureOverlay def={shapes2DMap[item.shapeId]} params={item.params} rotation={item.rotation} view={340} scale={item.scale} />
+                </g>
+              ))}
           </svg>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
+          <button
+            onClick={() => setShowMeasures((v) => !v)}
+            aria-pressed={showMeasures}
+            className={`w-full rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-95 ${
+              showMeasures ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 ring-1 ring-indigo-200 hover:bg-indigo-50'
+            }`}
+          >
+            📏 {showMeasures ? 'Ẩn số đo' : 'Hiện số đo các hình'}
+          </button>
+          <Panel title="Thêm hình">
+            <div className="grid grid-cols-4 gap-2">
+              {shapes2D.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => addShape(s.id)}
+                  title={s.name}
+                  className="flex flex-col items-center gap-0.5 rounded-xl border border-indigo-50 bg-indigo-50/40 p-1 text-[11px] leading-tight text-slate-600 transition hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-white active:scale-95"
+                >
+                  <ShapeSvg2D def={s} params={s.defaultParams} size={44} />
+                  <span className="line-clamp-2 text-center">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          </Panel>
           {selected ? (
             <div className="space-y-4 rounded-2xl border border-indigo-100 bg-white p-4 shadow-sm">
               <div className="text-sm font-semibold text-slate-700">{shapes2DMap[selected.shapeId].name}</div>
@@ -243,7 +290,7 @@ export default function Combine2DPage() {
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-indigo-200 bg-white/60 p-4 text-sm text-slate-400">
-              Chọn một hình trên bàn ghép để chỉnh sửa, hoặc bấm hình ở trên để thêm mới.
+              Bấm vào một hình trên bàn ghép để đổi màu, kích thước hoặc góc xoay.
             </div>
           )}
           {placed.length > 0 && (
@@ -257,8 +304,16 @@ export default function Combine2DPage() {
               Xóa toàn bộ bàn ghép
             </button>
           )}
+          <Fold title="❓ Cách chơi">
+            <ul className="list-disc space-y-1 pl-4">
+              <li>Bấm một hình ở bảng <b>Thêm hình</b> để thả lên bàn ghép.</li>
+              <li>Kéo hình để di chuyển; kéo chấm tròn tím phía trên hình để xoay.</li>
+              <li>Chọn một hình để đổi màu, kích thước, nhân đôi hoặc xóa.</li>
+            </ul>
+          </Fold>
         </div>
       </div>
+      )}
     </div>
   )
 }

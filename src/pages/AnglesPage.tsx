@@ -3,9 +3,11 @@ import AngleTypesExplorer from '../components/angles/AngleTypesExplorer'
 import ProtractorTool from '../components/angles/ProtractorTool'
 import CompassTool from '../components/angles/CompassTool'
 import TriangleAngleSum from '../components/angles/TriangleAngleSum'
+import ClockAngleTool from '../components/angles/ClockAngleTool'
 
 const TABS = [
   { id: 'types', label: 'Các loại góc', emoji: '📐' },
+  { id: 'clock', label: 'Góc trên mặt đồng hồ', emoji: '🕒' },
   { id: 'protractor', label: 'Vẽ góc bằng thước đo độ', emoji: '📏' },
   { id: 'compass', label: 'Vẽ hình tròn bằng compa', emoji: '🧭' },
   { id: 'triangle', label: 'Tổng ba góc tam giác', emoji: '🔺' },
@@ -37,6 +39,7 @@ export default function AnglesPage() {
 
       <div className="mt-6 rounded-2xl border border-indigo-100 bg-white/60 p-5 shadow-sm">
         {tab === 'types' && <AngleTypesExplorer />}
+        {tab === 'clock' && <ClockAngleTool />}
         {tab === 'protractor' && <ProtractorTool />}
         {tab === 'compass' && <CompassTool />}
         {tab === 'triangle' && <TriangleAngleSum />}

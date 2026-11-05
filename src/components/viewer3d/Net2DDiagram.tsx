@@ -38,7 +38,7 @@ export default function Net2DDiagram({ parts, color, size = 320 }: { parts: NetP
   const cy = (minY + maxY) / 2
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg viewBox={`0 0 ${size} ${size}`} className="block h-auto w-full max-h-[72vh]">
       <g transform={`translate(${size / 2} ${size / 2}) scale(${scale}) translate(${-cx} ${-cy})`}>
         {parts.map((part, i) =>
           part.kind === 'circle' ? (

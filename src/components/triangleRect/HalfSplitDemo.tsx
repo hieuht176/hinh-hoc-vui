@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { clamp } from '../../utils/angleMath'
+import { clientToSvg } from '../../utils/svgPoint'
 
 const X0 = 90
 const Y0 = 40
@@ -60,9 +61,7 @@ export default function HalfSplitDemo() {
   }
 
   const clientToLocal = (clientX: number, clientY: number): [number, number] => {
-    const rect = svgRef.current!.getBoundingClientRect()
-    const scale = 420 / rect.width
-    return [(clientX - rect.left) * scale, (clientY - rect.top) * scale]
+    return clientToSvg(svgRef.current!, clientX, clientY)
   }
   const onCornerPointerDown = (e: React.PointerEvent) => {
     if (t !== 0) return
@@ -85,15 +84,13 @@ export default function HalfSplitDemo() {
   const stageLabel = t < 0.3 ? 'joined' : t < 1.3 ? 'split' : 'overlaid'
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-      <div className="flex flex-col items-center gap-3">
-        <div className="rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm">
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="flex flex-col items-center gap-3 lg:sticky lg:top-20">
+        <div className="w-full rounded-3xl border border-indigo-100 bg-white p-2 shadow-sm sm:p-3">
           <svg
             ref={svgRef}
-            width={360}
-            height={280}
             viewBox="0 0 420 280"
-            className="touch-none rounded-xl bg-white"
+            className="block h-auto w-full max-h-[72vh] touch-none select-none rounded-xl bg-white"
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
           >
@@ -120,10 +117,10 @@ export default function HalfSplitDemo() {
             )}
           </svg>
         </div>
-        <p className="text-center text-xs text-slate-400">{t === 0 ? 'Kéo góc dưới-phải để đổi kích thước hình chữ nhật' : ' '}</p>
+        <p className="text-center text-sm text-slate-500">{t === 0 ? 'Kéo góc dưới-phải để đổi kích thước hình chữ nhật' : ' '}</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="rounded-2xl border border-indigo-100 bg-white p-4 shadow-sm">
           <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Số đo</div>
           <div className="grid grid-cols-3 gap-3 text-center">

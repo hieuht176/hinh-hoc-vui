@@ -1,12 +1,25 @@
 import { regularPolygonPoints, starPoints } from '../utils/polygon'
+import { PATTERN_SHAPES } from './patternShapes'
+
+/** One coloured piece of a patterned shape (local coordinates, same units as localPoints). */
+export type PatternPart =
+  | { kind: 'polygon'; points: [number, number][]; fill: string; stroke?: string }
+  | { kind: 'circle'; c: [number, number]; r: number; fill: string; stroke?: string }
 
 export interface PointShapeDef {
   id: string
   name: string
   kind: 'polygon' | 'circle'
+  /** Outline: used for dragging, vertex names A, B, C…, guide lines and side lengths. */
   localPoints?: [number, number][]
   radius?: number
   color: string
+  /** 'pattern' shapes are listed separately ("Hình có họa tiết") in the shape picker. */
+  group?: 'basic' | 'pattern'
+  /** Coloured pieces drawn on top of the outline, so the pattern turns/flips with the shape. */
+  parts?: PatternPart[]
+  /** Don't stroke the outline (flowers: the petals draw their own edges). */
+  hideOutline?: boolean
   /** Smallest number of equal turns that map the shape onto itself (its rotational-symmetry order); Infinity for a circle. */
   rotationalOrder: number
 }
@@ -14,9 +27,10 @@ export interface PointShapeDef {
 export const POINT_SHAPES: PointShapeDef[] = [
   {
     id: 'triangle',
-    name: 'Tam giác',
+    name: 'Tam giác đều',
     kind: 'polygon',
-    localPoints: [[-1.6, -1], [1.6, -1], [0, 1.7]],
+    // Equilateral and centred on the origin, so a 120° turn about the shape's own centre maps it exactly onto itself.
+    localPoints: regularPolygonPoints(3, 1.85, 90),
     color: '#6366f1',
     rotationalOrder: 3,
   },
@@ -123,6 +137,7 @@ export const POINT_SHAPES: PointShapeDef[] = [
     color: '#65a30d',
     rotationalOrder: 1,
   },
+  ...PATTERN_SHAPES,
 ]
 
 export const pointShapesMap = Object.fromEntries(POINT_SHAPES.map((s) => [s.id, s]))

@@ -44,7 +44,8 @@ export const shapes3D: Shape3DDef[] = [
     id: 'sphere',
     name: 'Hình cầu',
     category: 'Khối tròn xoay',
-    description: 'Tập hợp các điểm trong không gian cách đều một điểm cố định (tâm) một khoảng bằng bán kính r.',
+    description:
+      'Mặt cầu tâm O bán kính r là tập hợp các điểm trong không gian cách O một khoảng bằng r. Hình cầu gồm mặt cầu đó và toàn bộ phần bên trong.',
     properties: ['Mọi điểm trên mặt cầu cách đều tâm', 'Có vô số mặt phẳng đối xứng đi qua tâm', 'Mặt cắt qua tâm luôn là hình tròn lớn nhất'],
     formulas: [
       { label: 'Thể tích', formula: 'V = (4/3)πr³' },

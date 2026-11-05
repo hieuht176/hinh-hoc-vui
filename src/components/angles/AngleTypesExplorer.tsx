@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { ANGLE_TYPES, classifyAngle } from '../../data/angleTypes'
 import { angleOfPoint, arcPath, polarToCartesian } from '../../utils/angleMath'
+import { clientToSvg } from '../../utils/svgPoint'
 
 const CX = 130
 const CY = 260
@@ -15,9 +16,7 @@ export default function AngleTypesExplorer() {
   const current = classifyAngle(angleDeg)
 
   const clientToLocal = (clientX: number, clientY: number): [number, number] => {
-    const rect = svgRef.current!.getBoundingClientRect()
-    const scale = 400 / rect.width
-    return [(clientX - rect.left) * scale, (clientY - rect.top) * scale]
+    return clientToSvg(svgRef.current!, clientX, clientY)
   }
 
   const updateFromPoint = (clientX: number, clientY: number) => {
@@ -47,15 +46,13 @@ export default function AngleTypesExplorer() {
   const [labelX, labelY] = polarToCartesian(CX, CY, ARC_R + 22, angleDeg / 2)
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-      <div className="flex flex-col items-center gap-3">
-        <div className="rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm">
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="flex flex-col items-center gap-3 lg:sticky lg:top-20">
+        <div className="w-full rounded-3xl border border-indigo-100 bg-white p-2 shadow-sm sm:p-3">
           <svg
             ref={svgRef}
-            width={340}
-            height={280}
             viewBox="0 0 400 280"
-            className="touch-none rounded-xl bg-white"
+            className="block h-auto w-full max-h-[72vh] touch-none select-none rounded-xl bg-white"
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
           >
@@ -81,7 +78,7 @@ export default function AngleTypesExplorer() {
             </text>
           </svg>
         </div>
-        <p className="text-center text-xs text-slate-400">Kéo chấm màu để thay đổi số đo góc</p>
+        <p className="text-center text-sm text-slate-500">Kéo chấm màu để thay đổi số đo góc</p>
         <input
           type="range"
           min={1}
@@ -93,7 +90,7 @@ export default function AngleTypesExplorer() {
         />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div
           className="rounded-2xl border-2 px-5 py-4 text-center shadow-sm transition"
           style={{ borderColor: current?.color ?? '#cbd5e1', background: current ? `${current.color}14` : '#f8fafc' }}
@@ -102,6 +99,7 @@ export default function AngleTypesExplorer() {
           <div className="text-2xl font-bold" style={{ color: current?.color ?? '#64748b' }}>
             {current?.name ?? 'Chưa xác định'}
           </div>
+          {current && <p className="mt-2 text-sm leading-relaxed text-slate-600">{current.description}</p>}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -121,7 +119,6 @@ export default function AngleTypesExplorer() {
                   <div className="font-mono text-xs text-slate-400">{t.range}</div>
                 </div>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-slate-500">{t.description}</p>
             </button>
           ))}
         </div>

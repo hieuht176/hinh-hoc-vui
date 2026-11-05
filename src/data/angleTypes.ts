@@ -45,7 +45,7 @@ export const ANGLE_TYPES: AngleTypeDef[] = [
     name: 'Góc lõm',
     range: '180° < góc < 360°',
     example: 260,
-    description: 'Góc có số đo lớn hơn 180° và nhỏ hơn 360° — "phần góc lớn hơn" ở phía bên kia của hai cạnh.',
+    description: 'Góc có số đo lớn hơn 180° và nhỏ hơn 360° — "phần góc lớn hơn" ở phía bên kia của hai cạnh. (Phần mở rộng: chương trình lớp 6 chỉ học các góc từ 0° đến 180°.)',
     color: '#8b5cf6',
   },
 ]
