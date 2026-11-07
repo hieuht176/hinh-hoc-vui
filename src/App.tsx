@@ -9,6 +9,7 @@ import Detail3DPage from './pages/Detail3DPage'
 import Combine2DPage from './pages/Combine2DPage'
 import Combine3DPage from './pages/Combine3DPage'
 import TransformPage from './pages/TransformPage'
+import SymmetryPatternPage from './pages/SymmetryPatternPage'
 import AnglesPage from './pages/AnglesPage'
 import TriangleRectanglePage from './pages/TriangleRectanglePage'
 
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/ghep-hinh-2d" element={<Combine2DPage />} />
           <Route path="/ghep-hinh-3d" element={<Combine3DPage />} />
           <Route path="/phep-bien-hinh" element={<TransformPage />} />
+          <Route path="/hoa-tiet-doi-xung" element={<SymmetryPatternPage />} />
           <Route path="/goc-va-compa" element={<AnglesPage />} />
           <Route path="/tam-giac-va-hcn" element={<TriangleRectanglePage />} />
         </Routes>

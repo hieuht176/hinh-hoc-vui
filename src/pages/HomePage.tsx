@@ -7,6 +7,7 @@ const cards = [
   { to: '/ghep-hinh-2d', title: 'Ghép hình 2D', desc: 'Kéo thả hình phẳng để ghép thành ngôi nhà, bông hoa…', emoji: '🧩', tint: 'from-fuchsia-50' },
   { to: '/ghep-hinh-3d', title: 'Ghép hình 3D', desc: 'Xếp chồng các khối thành mô hình của em.', emoji: '🏗️', tint: 'from-amber-50' },
   { to: '/phep-bien-hinh', title: 'Phép biến hình', desc: 'Trượt, quay, lật hình và soi gương trên lưới ô vuông.', emoji: '📐', tint: 'from-teal-50' },
+  { to: '/hoa-tiet-doi-xung', title: 'Hoạ tiết đối xứng', desc: 'Bật nhiều trục gương cùng lúc, đặt nhiều hình, tô ô tạo hoạ tiết.', emoji: '🪞', tint: 'from-emerald-50' },
   { to: '/goc-va-compa', title: 'Góc & Compa', desc: 'Các loại góc, góc trên mặt đồng hồ, thước đo độ, compa.', emoji: '🧭', tint: 'from-indigo-50' },
   { to: '/tam-giac-va-hcn', title: 'Tam giác & Hình chữ nhật', desc: 'Vì sao diện tích tam giác bằng một nửa hình chữ nhật?', emoji: '✂️', tint: 'from-rose-50' },
 ]
