@@ -8,7 +8,7 @@ import ClockAngleTool from '../components/angles/ClockAngleTool'
 const TABS = [
   { id: 'types', label: 'Các loại góc', emoji: '📐' },
   { id: 'clock', label: 'Góc trên mặt đồng hồ', emoji: '🕒' },
-  { id: 'protractor', label: 'Vẽ góc bằng thước đo độ', emoji: '📏' },
+  { id: 'protractor', label: 'Đo & vẽ góc bằng thước đo độ', emoji: '📏' },
   { id: 'compass', label: 'Vẽ hình tròn bằng compa', emoji: '🧭' },
   { id: 'triangle', label: 'Tổng ba góc tam giác', emoji: '🔺' },
 ] as const
@@ -21,7 +21,7 @@ export default function AnglesPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-3xl font-bold text-slate-800">Góc & Compa</h1>
-      <p className="mt-2 text-slate-500">Tìm hiểu các loại góc, tập vẽ góc bằng thước đo độ, vẽ hình tròn bằng compa, và khám phá vì sao tổng ba góc trong một tam giác luôn bằng 180°.</p>
+      <p className="mt-2 text-slate-500">Tìm hiểu các loại góc, tập đo và vẽ góc bằng thước đo độ, vẽ hình tròn bằng compa, và khám phá vì sao tổng ba góc trong một tam giác luôn bằng 180°.</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         {TABS.map((t) => (

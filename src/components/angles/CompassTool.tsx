@@ -24,6 +24,8 @@ interface DrawnCircle {
   cx: number
   cy: number
   r: number
+  /** Direction of the radius when it was drawn (where the pencil started), for the measuring overlay. */
+  angle: number
   color: string
 }
 
@@ -144,7 +146,7 @@ export default function CompassTool() {
   const draw = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     drawSide.current = pickSide(center, polarToCartesian(CX, CY, radius, handleAngle))
-    const circle: DrawnCircle = { id: nextCircleId++, cx: CX, cy: CY, r: radius, color }
+    const circle: DrawnCircle = { id: nextCircleId++, cx: CX, cy: CY, r: radius, angle: handleAngle, color }
     setIsDrawing(true)
     moved()
     setSweep(0)
@@ -182,16 +184,17 @@ export default function CompassTool() {
     setRadius((r) => clamp(Math.round((r + dCm * PX_PER_CM) / MM) * MM, MIN_R, MAX_R))
   }
 
-  const overlays = isDone && (showLengths || showParts)
   const last = circles[circles.length - 1]
+  /** Radius / diameter / parts of the most recently drawn circle (available as long as there is one). */
+  const overlays = !!last && !isDrawing && (showLengths || showParts)
 
   /**
    * Radius from the centre to the pencil tip; the diameter is drawn at right angles to it so the two never overlap.
    * Names ("bán kính") go on one side of each line, lengths ("r = 4 cm") on the other.
    */
   const measureLayer = (() => {
-    if (!overlays) return null
-    const h = handleAngle
+    if (!overlays || !last) return null
+    const { cx: CX, cy: CY, r: radius, angle: h } = last
     const unit = (deg: number): [number, number] => {
       const [x, y] = polarToCartesian(0, 0, 1, deg)
       return [x, y]
@@ -322,7 +325,7 @@ export default function CompassTool() {
           Kéo <b className="text-indigo-600">vòng tím</b> (đầu chì) để mở compa. Kéo <b className="text-slate-700">chấm đen</b> (đầu kim) để dời compa sang chỗ
           khác rồi vẽ thêm hình tròn. Mỗi ô lưới là 1 cm.
         </p>
-        {isDone && (
+        {last && !isDrawing && (
           <div className="flex flex-wrap justify-center gap-2">
             {(
               [
@@ -343,13 +346,13 @@ export default function CompassTool() {
             ))}
           </div>
         )}
-        {isDone && showParts && (
+        {last && !isDrawing && showParts && (
           <ul className="w-full space-y-1.5 rounded-2xl border border-indigo-100 bg-white px-4 py-3 text-sm leading-relaxed text-slate-700 shadow-sm">
             {[
               ['#1e293b', 'Tâm O: điểm đặt đầu nhọn của compa, nằm chính giữa hình tròn.'],
-              [RADIUS_COLOR, `Bán kính: đoạn thẳng nối tâm O với một điểm trên đường tròn (chính là độ mở của compa), r = ${fmtCm(radius)} cm.`],
-              [DIAMETER_COLOR, `Đường kính: đoạn thẳng đi qua tâm O, nối hai điểm trên đường tròn: d = 2 × r = ${fmtCm(2 * radius)} cm.`],
-              [RING_COLOR, `Đường tròn: nét cong do đầu bút chì vẽ ra. Độ dài đường tròn chính là chu vi: C = 2 × π × r ≈ ${fmtCm(2 * Math.PI * radius)} cm.`],
+              [RADIUS_COLOR, `Bán kính: đoạn thẳng nối tâm O với một điểm trên đường tròn (chính là độ mở của compa), r = ${fmtCm(last.r)} cm.`],
+              [DIAMETER_COLOR, `Đường kính: đoạn thẳng đi qua tâm O, nối hai điểm trên đường tròn: d = 2 × r = ${fmtCm(2 * last.r)} cm.`],
+              [RING_COLOR, `Đường tròn: nét cong do đầu bút chì vẽ ra. Độ dài đường tròn chính là chu vi: C = 2 × π × r ≈ ${fmtCm(2 * Math.PI * last.r)} cm.`],
               ['#4338ca', 'Hình tròn: gồm đường tròn và toàn bộ phần bên trong.'],
             ].map(([c, text]) => (
               <li key={c} className="flex gap-2">
