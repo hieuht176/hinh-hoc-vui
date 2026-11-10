@@ -2,12 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { angleOfPoint, arcPath, clamp, polarToCartesian } from '../../utils/angleMath'
 import { clientToSvg } from '../../utils/svgPoint'
 import { Fold } from '../common/StudyLayout'
+import RealCompass, { MeasureRuler, compassHinge } from './RealCompass'
 
 const CX = 200
 const CY = 200
 const PX_PER_CM = 20
 const MIN_R = 20
 const MAX_R = 150
+/** Drag snaps to whole millimetres. */
+const MM = PX_PER_CM / 10
 const DRAW_DURATION = 1800
 
 const RADIUS_COLOR = '#dc2626'
@@ -56,10 +59,13 @@ export default function CompassTool() {
   const [isDone, setIsDone] = useState(false)
   const [showLengths, setShowLengths] = useState(false)
   const [showParts, setShowParts] = useState(false)
+  const [showRuler, setShowRuler] = useState(true)
 
   const svgRef = useRef<SVGSVGElement>(null)
   const dragging = useRef(false)
   const rafRef = useRef<number | null>(null)
+  /** Which side of the radius the compass hinge is on; fixed while drawing so the compass turns smoothly. */
+  const drawSide = useRef<1 | -1>(1)
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -71,7 +77,7 @@ export default function CompassTool() {
 
   const updateFromPoint = (clientX: number, clientY: number) => {
     const [x, y] = clientToLocal(clientX, clientY)
-    const r = clamp(Math.hypot(x - CX, y - CY), MIN_R, MAX_R)
+    const r = clamp(Math.round(Math.hypot(x - CX, y - CY) / MM) * MM, MIN_R, MAX_R)
     const deg = angleOfPoint(CX, CY, x, y)
     setRadius(r)
     setHandleAngle(deg)
@@ -94,6 +100,7 @@ export default function CompassTool() {
 
   const draw = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    drawSide.current = compassHinge([CX, CY], polarToCartesian(CX, CY, radius, handleAngle)).side
     setIsDrawing(true)
     setIsDone(false)
     setSweep(0)
@@ -176,7 +183,14 @@ export default function CompassTool() {
 
   const drawEndDeg = handleAngle + sweep
   const [penX, penY] = polarToCartesian(CX, CY, radius, isDrawing ? drawEndDeg : handleAngle)
-  const [pivotX, pivotY] = [CX, CY - 32]
+  const side = isDrawing ? drawSide.current : compassHinge([CX, CY], [penX, penY]).side
+  const { hinge } = compassHinge([CX, CY], [penX, penY], side)
+  const hingeLocalY = (hinge[0] - CX) * Math.sin((handleAngle * Math.PI) / 180) + (hinge[1] - CY) * Math.cos((handleAngle * Math.PI) / 180)
+  const rulerSide: 1 | -1 = hingeLocalY > 0 ? -1 : 1
+  const nudge = (dCm: number) => {
+    if (isDrawing) return
+    setRadius((r) => clamp(Math.round((r + dCm * PX_PER_CM) / MM) * MM, MIN_R, MAX_R))
+  }
 
   return (
     <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -200,16 +214,23 @@ export default function CompassTool() {
 
             {!overlays && (
               <>
-                {/* compass legs illustration */}
-                <line x1={pivotX} y1={pivotY} x2={CX} y2={CY} stroke="#94a3b8" strokeWidth={3} strokeLinecap="round" />
-                <line x1={pivotX} y1={pivotY} x2={penX} y2={penY} stroke="#94a3b8" strokeWidth={3} strokeLinecap="round" />
-                <circle cx={pivotX} cy={pivotY} r={5} fill="#64748b" />
-
-                <line x1={CX} y1={CY} x2={penX} y2={penY} stroke="#c7d2fe" strokeWidth={1.5} strokeDasharray="4 3" />
-                <circle cx={CX} cy={CY} r={5} fill="#1e293b" />
-                <text x={CX} y={CY + 20} fontSize={11} fill="#64748b" textAnchor="middle">
-                  tâm
-                </text>
+                {showRuler && !isDrawing && (
+                  <MeasureRuler
+                    center={[CX, CY]}
+                    angleDeg={handleAngle}
+                    lengthPx={radius}
+                    pxPerCm={PX_PER_CM}
+                    maxCm={8}
+                    side={rulerSide}
+                    label={`${fmtCm(radius)} cm`}
+                  />
+                )}
+                {!(showRuler && !isDrawing) && (
+                  <line x1={CX} y1={CY} x2={penX} y2={penY} stroke={RADIUS_COLOR} strokeOpacity={0.6} strokeWidth={1.5} strokeDasharray="4 3" />
+                )}
+                <circle cx={CX} cy={CY} r={3.5} fill="#1e293b" />
+                {/* the real compass: needle on the centre, pencil on the drawing point */}
+                <RealCompass center={[CX, CY]} pen={[penX, penY]} side={side} />
               </>
             )}
             {measureLayer}
@@ -218,14 +239,22 @@ export default function CompassTool() {
               className={isDrawing ? '' : 'cursor-grab active:cursor-grabbing'}
               onPointerDown={onHandlePointerDown}
             >
-              <circle cx={penX} cy={penY} r={14} fill="#6366f1" fillOpacity={0.15} stroke="#6366f1" strokeWidth={2} />
-              <text x={penX} y={penY + 5} fontSize={14} textAnchor="middle">
-                ✏️
-              </text>
+              <circle
+                cx={penX}
+                cy={penY}
+                r={15}
+                fill="#6366f1"
+                fillOpacity={overlays ? 0.15 : 0.08}
+                stroke="#6366f1"
+                strokeWidth={1.5}
+                strokeDasharray={overlays ? undefined : '4 3'}
+              />
             </g>
           </svg>
         </div>
-        <p className="text-center text-sm text-slate-500">Kéo đầu bút chì để mở compa theo bán kính mong muốn</p>
+        <p className="text-center text-sm text-slate-500">
+          Kéo đầu bút chì (vòng tròn tím) để mở compa. Đầu kim đặt ở vạch <b>0</b> của thước, đầu chì chỉ vào số đo — đó là bán kính.
+        </p>
         {isDone && (
           <div className="flex flex-wrap justify-center gap-2">
             {(
@@ -268,7 +297,29 @@ export default function CompassTool() {
       <div className="space-y-3">
         <div className="rounded-2xl border border-indigo-100 bg-white p-4 text-center shadow-sm">
           <div className="text-sm text-slate-500">Bán kính compa (khoảng cách tâm — đầu bút)</div>
-          <div className="text-3xl font-bold text-indigo-600">{(radius / PX_PER_CM).toFixed(1)} cm</div>
+          <div className="text-3xl font-bold text-indigo-600">{fmtCm(radius)} cm</div>
+          <div className="mt-3 grid grid-cols-4 gap-1.5">
+            {[-0.5, -0.1, 0.1, 0.5].map((d) => (
+              <button
+                key={d}
+                onClick={() => nudge(d)}
+                disabled={isDrawing}
+                className="rounded-lg bg-slate-100 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-200 active:scale-95 disabled:opacity-50"
+              >
+                {d > 0 ? '+' : '−'}
+                {String(Math.abs(d)).replace('.', ',')} cm
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowRuler((v) => !v)}
+            aria-pressed={showRuler}
+            className={`mt-2 w-full rounded-lg py-1.5 text-sm font-semibold transition active:scale-95 ${
+              showRuler ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-white text-amber-700 ring-1 ring-amber-200 hover:bg-amber-50'
+            }`}
+          >
+            📏 {showRuler ? 'Ẩn thước đo' : 'Hiện thước đo'}
+          </button>
         </div>
 
         <div className="flex gap-2">
@@ -286,13 +337,13 @@ export default function CompassTool() {
 
         {isDone && (
           <div className="rounded-2xl border-2 border-emerald-400 bg-emerald-50 px-4 py-3 text-center text-sm font-semibold text-emerald-600">
-            ✅ Xong! Mọi điểm trên đường tròn đều cách tâm đúng {(radius / PX_PER_CM).toFixed(1)} cm.
+            ✅ Xong! Mọi điểm trên đường tròn đều cách tâm đúng {fmtCm(radius)} cm.
           </div>
         )}
 
         <Fold title="🧭 Cách vẽ hình tròn bằng compa">
           <ol className="list-decimal space-y-1 pl-4">
-            <li>Xác định độ dài bán kính R muốn vẽ, mở compa sao cho khoảng cách giữa hai đầu đúng bằng R.</li>
+            <li>Xác định độ dài bán kính R muốn vẽ. Đặt compa lên thước thẳng: đầu kim ở vạch 0, mở compa đến khi đầu chì chạm đúng vạch R.</li>
             <li>Đặt đầu nhọn của compa cố định tại điểm làm tâm, không để bị xê dịch.</li>
             <li>Xoay đầu chì một vòng quanh tâm — vì đầu chì luôn cách tâm đúng bằng R, nó vẽ ra một đường tròn hoàn chỉnh.</li>
           </ol>
